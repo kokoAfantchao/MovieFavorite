@@ -41,7 +41,7 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity {
 
     private static  String KEY_PARAM ="api_key";
-    private static  String API_KEY="";
+    private static  String API_KEY="60ef851a2b0c8a62248a58458a84808e";
     public  static  String POPULAR_MOVIE="popular";
     public  static  String TOP_RATE_MOVIE="top_rated";
     private RecyclerView mRecyclerView;
