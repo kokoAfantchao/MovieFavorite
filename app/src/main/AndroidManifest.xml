@@ -26,6 +26,8 @@
             android:label="@string/title_activity_movie_detail_"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
