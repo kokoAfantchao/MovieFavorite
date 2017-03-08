@@ -1,4 +1,4 @@
-package io.push.movieapp.entity;
+package io.push.movieapp.Entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -195,4 +195,5 @@ public class Movie implements Parcelable{
                 ", vote_average=" + vote_average +
                 '}';
     }
+
 }

@@ -1,15 +1,16 @@
-package io.push.movieapp.entity;
+package io.push.movieapp.QueryResult;
 
 import java.util.List;
 
+import io.push.movieapp.Entity.Movie;
+
 /**
- * Created by nestorkokoafantchao on 12/7/16.
+ * Created by nestorkokoafantchao on 3/7/17.
  */
 
 public class MovieResult {
-
     private  Integer page ;
-    private  List<Movie> results;
+    private List<Movie> results;
     private  Integer totale_results;
     private  Integer totale_pages;
 

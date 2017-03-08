@@ -1,4 +1,4 @@
-package io.push.movieapp.entity;
+package io.push.movieapp.Service;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

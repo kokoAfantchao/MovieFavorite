@@ -3,60 +3,48 @@ package io.push.movieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
-
-import com.google.gson.Gson;
-
-import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import io.push.movieapp.entity.Movie;
-import io.push.movieapp.entity.MovieResult;
-import io.push.movieapp.entity.MovieService;
-import io.push.movieapp.entity.MyListAdapter;
-import io.push.movieapp.entity.ServiceGeneratore;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.push.movieapp.Adapter.MyListAdapter;
+import io.push.movieapp.Service.MovieService;
+import io.push.movieapp.Service.ServiceGeneratore;
+import io.push.movieapp.Entity.Movie;
+import io.push.movieapp.QueryResult.MovieResult;
 import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
     private static  String KEY_PARAM ="api_key";
-    private static  String API_KEY="";
+    public  static final String API_KEY="60ef851a2b0c8a62248a58458a84808e";
     public  static  String POPULAR_MOVIE="popular";
     public  static  String TOP_RATE_MOVIE="top_rated";
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.myrecycler) RecyclerView mRecyclerView;
     private MyListAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<Movie> movies = new ArrayList<>();
-    private ImageView mImageError ;
+    @BindView(R.id.img_no_network) ImageView mImageError ;
 
 
 
@@ -64,12 +52,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.myrecycler);
-        mImageError =(ImageView ) findViewById(R.id.img_no_network);
+
+
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -184,9 +173,6 @@ public class MainActivity extends AppCompatActivity {
             try {
 
 //                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
-//
-//
-//
 //                Uri uri = Uri.parse(MOVIE_BASE_URL+REQUEST_TYPE).buildUpon()
 //                        .appendQueryParameter(KEY_PARAM, getResources().getString(R.string.api_key))
 //                      //  .appendQueryParameter(API_ID, APPID)
@@ -206,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
 //                if (inputStream == null) {
 //                    MoviesJson = null;
 //                }
-//
 //                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //
 //                 // bufferedReader.readLine();
@@ -222,30 +207,13 @@ public class MainActivity extends AppCompatActivity {
 //*/
 
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
                 String sharedPrefString = sharedPref.getString(SettingsActivity.PREF_SORT_TYPE_KEY,POPULAR_MOVIE);
-
-
                 Log.d(LOG_CAT,"++++++Share preference out put  "+sharedPrefString);
-
                 MovieService movieService = ServiceGeneratore.createService(MovieService.class);
-
-                   Call<MovieResult> repos = movieService.listmovie(sharedPrefString,API_KEY);
-
-
-                   MovieResult ReponseMovies = repos.execute().body();
-
-
-                   Log.d(LOG_CAT,"buffer reader "+ReponseMovies.toString()+"output");
-
-
-
-              return  ReponseMovies ;
-
-
-
-
-
+                Call<MovieResult> repos = movieService.listmovie(sharedPrefString,API_KEY);
+                MovieResult ReponseMovies = repos.execute().body();
+                Log.d(LOG_CAT,"buffer reader "+ReponseMovies.toString()+"output");
+                return  ReponseMovies ;
             } catch (IOException e) {
                 Log.e(LOG_CAT, "Error" + e.toString(), e);
 

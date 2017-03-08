@@ -81,5 +81,6 @@
     <string name="sort_order">Sort Order</string>
     <string name="pref_sort_type_key">order_key</string>
     <string name="text_over_view">Over View</string>
+    <string name="tv_rating">Rating:</string>
 
 </resources>
