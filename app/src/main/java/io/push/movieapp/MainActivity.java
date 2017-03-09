@@ -9,6 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,8 +37,8 @@ import io.push.movieapp.Entity.Movie;
 import io.push.movieapp.QueryResult.MovieResult;
 import retrofit2.Call;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,LoaderManager.LoaderCallbacks<MovieResult> {
+    private final String LOG_CAT = MainActivity.class.getSimpleName();
     private static  String KEY_PARAM ="api_key";
     public  static final String API_KEY="60ef851a2b0c8a62248a58458a84808e";
     public  static  String POPULAR_MOVIE="popular";
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private List<Movie> movies = new ArrayList<>();
     @BindView(R.id.img_no_network) ImageView mImageError ;
+    private static final  int LOADER_ID=123;
 
 
 
@@ -55,49 +59,36 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
-
-        // use this setting to improve performance if you know that changes
+         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
         mLayoutManager = new GridLayoutManager(this,2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
         mAdapter = new MyListAdapter();
-
         mRecyclerView.setAdapter(mAdapter);
+        getSupportLoaderManager().initLoader(LOADER_ID,null,this);
 
-
-
-
-         FecthMovieTask fecthMovieTask = new FecthMovieTask();
-
-        boolean online = isOnline();
-
+         boolean online = isOnline();
         if (online){
             mRecyclerView.setVisibility(View.VISIBLE);
             mImageError.setVisibility(View.INVISIBLE);
-            fecthMovieTask.execute();
+            getSupportLoaderManager().getLoader(LOADER_ID).forceLoad();
         }else{
-
             mRecyclerView.setVisibility(View.INVISIBLE);
             mImageError.setVisibility(View.VISIBLE);
-
         }
 
-        PreferenceManager.setDefaultValues(this, R.xml.pref_generals, false);
+      PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("movies", (ArrayList<? extends Parcelable>) movies);
+        getSupportLoaderManager().restartLoader(LOADER_ID, null,this);
         super.onSaveInstanceState(outState);
     }
 
@@ -117,13 +108,10 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             Intent  intent = new Intent(getApplicationContext(),SettingsActivity.class);
             startActivity(intent);
-
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -134,78 +122,28 @@ public class MainActivity extends AppCompatActivity {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-
-
-
-    public class FecthMovieTask extends AsyncTask<String ,Void,MovieResult> {
-
-        public String REQUEST_TYPE = POPULAR_MOVIE;
-
-
-        protected void onPostExecute(MovieResult movieResult) {
-            super.onPostExecute(movieResult);
-             movies=movieResult.getResults();
-             mAdapter.setMovies(movieResult.getResults());
-             mAdapter.notifyDataSetChanged();
+        if (key.equals(getString(R.string.pref_sort_type_key))) {
+            getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+            getSupportLoaderManager().getLoader(LOADER_ID).forceLoad();
+            Log.d(LOG_CAT," Sharepreference is changed");
         }
+    }
 
+    @Override
+    public Loader<MovieResult> onCreateLoader(int id, Bundle args) {
+        return  new AsyncTaskLoader<MovieResult>(this) {
 
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+            }
 
-
-        private final String LOG_CAT = FecthMovieTask.class.getSimpleName();
-
-
-        @Override
-        protected MovieResult doInBackground(String... params) {
-            HttpURLConnection httpURLConnection = null;
-            BufferedReader bufferedReader = null;
-
-
-
-            String format = "json";
-            String unit = "metric";
-
-            int numday = 7;
-
-            String  MoviesJson = null;
-
-            try {
-
-//                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
-//                Uri uri = Uri.parse(MOVIE_BASE_URL+REQUEST_TYPE).buildUpon()
-//                        .appendQueryParameter(KEY_PARAM, getResources().getString(R.string.api_key))
-//                      //  .appendQueryParameter(API_ID, APPID)
-//                        .build();
-//                URL url = new URL(uri.toString());
-//                Log.v(LOG_CAT, "Uri.builder :" + uri.toString());
-//
-//
-//                httpURLConnection = (HttpURLConnection) url.openConnection();
-//                httpURLConnection.setRequestMethod("GET");
-//                httpURLConnection.connect();
-//                InputStream inputStream = httpURLConnection.getInputStream();
-//
-//                StringBuffer stringBuffer = new StringBuffer();
-//                StringBuilder  stringBuilder = new StringBuilder();
-//
-//                if (inputStream == null) {
-//                    MoviesJson = null;
-//                }
-//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//
-//                 // bufferedReader.readLine();
-//
-//
-//
-///*
-//                String line ;
-//                while ((line = bufferedReader.readLine()) != null) {
-//                    Log.d(LOG_CAT, stringBuffer+ "output line by line ");
-//                    stringBuffer.append(line);
-//                }
-//*/
-
+            @Override
+            public MovieResult loadInBackground() {
+                try{
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 String sharedPrefString = sharedPref.getString(SettingsActivity.PREF_SORT_TYPE_KEY,POPULAR_MOVIE);
                 Log.d(LOG_CAT,"++++++Share preference out put  "+sharedPrefString);
@@ -215,16 +153,38 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(LOG_CAT,"buffer reader "+ReponseMovies.toString()+"output");
                 return  ReponseMovies ;
             } catch (IOException e) {
-                Log.e(LOG_CAT, "Error" + e.toString(), e);
-
-            } finally {
-
-
-
+                Log.e(LOG_CAT, "Error" + e.toString(),e);
+            }
+                return null ;
             }
 
-            return null ;
-
-        }
+            @Override
+            public void deliverResult(MovieResult data) {
+                movies=data.getResults();
+                mAdapter.setMovies(data.getResults());
+                mAdapter.notifyDataSetChanged();
+                super.deliverResult(data);
+            }
+        };
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<MovieResult> loader, MovieResult data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<MovieResult> loader) {
+
+    }
+
+
+
 }

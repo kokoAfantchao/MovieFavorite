@@ -43,20 +43,21 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(getIntent().getStringExtra(MyListAdapter.EXTRA_TITLE));
         movieId= getIntent().getIntExtra(MyListAdapter.EXTRA_MOVIE_ID,0);
         Picasso.with(this).load(getIntent().getStringExtra(MyListAdapter.EXTRA_IMAGE_URL)).into(imageView);
         textViewReleasedDate.setText(getIntent().getStringExtra(MyListAdapter.EXTRA_RELEASED_DATE));
+        textView_decription.setText(getIntent().getStringExtra(MyListAdapter.EXTRA_DESCRIPTION));
         Double aDouble = getIntent().getDoubleExtra(MyListAdapter.EXTRA_VOTE_AVERAGE,0);
         mratingBar.setRating(aDouble.floatValue());
-        getSupportLoaderManager().initLoader(ASYNCLAODER_TASK, null, this);
-        loadQuery();
+
+        Loader<QueryResult> queryResultLoader = getSupportLoaderManager().initLoader(ASYNCLAODER_TASK, null, this);
+        queryResultLoader.forceLoad();
+
     }
 
-    public void loadQuery(){
-        getSupportLoaderManager().restartLoader(ASYNCLAODER_TASK,null, this);
-    }
 
     @Override
     public Loader<QueryResult> onCreateLoader(int id, Bundle args) {
@@ -65,25 +66,24 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                Log.d("THIS THE NEW CALL OF","onStartLoading()");
+
             }
 
             @Override
             public QueryResult loadInBackground(){
 
-                Log.d("THIS THE NEW CALL OF","loadInBackground()");
+
                 MovieService movieService = ServiceGeneratore.createService(MovieService.class);
                 Call<ReviewResult> reviewResultCall = movieService.movieReviews(movieId, MainActivity.API_KEY);
                 Call<VideoResult> videoResultCall = movieService.movieVideos(movieId, MainActivity.API_KEY);
                 try {
                     ReviewResult reviewResult  = reviewResultCall.execute().body();
-                    VideoResult videoResult  = videoResultCall.execute().body();
-                     Log.d("THIS IS THE NEW CALL","buffer reader "+ videoResult.toString()+"output");
+                    VideoResult videoResult    = videoResultCall.execute().body();
+
                      return new QueryResult(videoResult,reviewResult);
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.d("THIS THE NEW CALL OF","ERROR IS OUT FOR THIS ");
                 }
              return null;
             }
@@ -99,6 +99,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
 
     @Override
     public void onLoadFinished(Loader<QueryResult> loader, QueryResult data) {
+        Log.d("ON_LOADFINISHED", data.toString());
 
     }
 

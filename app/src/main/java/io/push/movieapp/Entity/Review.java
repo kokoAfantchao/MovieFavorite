@@ -9,7 +9,6 @@ public class Review {
     private String author;
     private String content;
 
-
     public String getId() {
         return id;
     }
@@ -33,4 +32,5 @@ public class Review {
     public void setContent(String content) {
         this.content = content;
     }
+
 }

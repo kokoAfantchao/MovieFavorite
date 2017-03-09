@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import java.util.Arrays;
 import java.util.Date;
 
+import io.realm.RealmObject;
+
 /**
  * Created by nestorkokoafantchao on 12/7/16.
  */
@@ -15,7 +17,7 @@ public class Movie implements Parcelable{
     private String post_path;
     private Boolean adult;
     private String overview;
-    private Date release_date ;
+    private Date release_date;
     private Integer [] genre_is;
     private Integer id;
     private String originale_title;
@@ -27,6 +29,9 @@ public class Movie implements Parcelable{
     private Boolean video ;
     private Double  vote_average;
 
+    public  Movie(){
+
+    }
 
     protected Movie(Parcel in) {
         post_path = in.readString();
