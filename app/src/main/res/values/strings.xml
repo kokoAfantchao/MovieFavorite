@@ -80,7 +80,15 @@
     <string name="popular" translatable="false">popular</string>
     <string name="sort_order">Sort Order</string>
     <string name="pref_sort_type_key">order_key</string>
-    <string name="text_over_view">Over View</string>
+    <string name="text_over_view">OverView</string>
     <string name="tv_rating">Rating:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_tab_review">REVIEW</string>
+    <string name="text_tab_over_view">OVER VIEW</string>
+    <string name="text_tab_video">VIDEO</string>
+    <string name="action_play">Play</string>
+    <string name="action_favorite">Favorite</string>
 
 </resources>

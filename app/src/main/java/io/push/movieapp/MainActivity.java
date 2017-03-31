@@ -3,6 +3,7 @@ package io.push.movieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -40,7 +42,7 @@ import retrofit2.Call;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,LoaderManager.LoaderCallbacks<MovieResult> {
     private final String LOG_CAT = MainActivity.class.getSimpleName();
     private static  String KEY_PARAM ="api_key";
-    public  static final String API_KEY="60ef851a2b0c8a62248a58458a84808e";
+    public  static  String API_KEY=BuildConfig.THE_MOVIE_DB_API_TOKEN;
     public  static  String POPULAR_MOVIE="popular";
     public  static  String TOP_RATE_MOVIE="top_rated";
     @BindView(R.id.myrecycler) RecyclerView mRecyclerView;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private List<Movie> movies = new ArrayList<>();
     @BindView(R.id.img_no_network) ImageView mImageError ;
     private static final  int LOADER_ID=123;
+    private StaggeredGridLayoutManager gaggeredGridLayoutManager;
+
 
 
 
@@ -56,18 +60,28 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(savedInstanceState!=null ){
+            movies= (List<Movie>)savedInstanceState.get("movies");
+
+        }
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
          // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this,2);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        } else{
+            gaggeredGridLayoutManager = new StaggeredGridLayoutManager(3,1);
+        }
+        mRecyclerView.setLayoutManager(gaggeredGridLayoutManager);
+
 
         // specify an adapter (see also next example)
         mAdapter = new MyListAdapter();
+        mAdapter.setMovies(movies);
         mRecyclerView.setAdapter(mAdapter);
         getSupportLoaderManager().initLoader(LOADER_ID,null,this);
 
@@ -87,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("movies", (ArrayList<? extends Parcelable>) movies);
+        outState.putParcelableArrayList("movies",(ArrayList<? extends Parcelable>) movies);
         getSupportLoaderManager().restartLoader(LOADER_ID, null,this);
         super.onSaveInstanceState(outState);
     }
@@ -110,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (id == R.id.action_settings) {
             Intent  intent = new Intent(getApplicationContext(),SettingsActivity.class);
             startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_favorite){
+
             return true;
         }
         return super.onOptionsItemSelected(item);

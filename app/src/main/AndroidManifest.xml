@@ -27,6 +27,10 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+        <provider
+            android:authorities="io.push.movieapp"
+            android:name="io.push.movieapp.Entity.MovieContentProvider"
+            android:exported="false"/>
 
         <activity
             android:name=".SettingsActivity"
