@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -32,7 +33,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.push.movieapp.Adapter.FavoriteMovieAdapter;
 import io.push.movieapp.Adapter.MyListAdapter;
+import io.push.movieapp.Entity.MovieContract;
 import io.push.movieapp.Service.MovieService;
 import io.push.movieapp.Service.ServiceGeneratore;
 import io.push.movieapp.Entity.Movie;
@@ -40,6 +43,8 @@ import io.push.movieapp.QueryResult.MovieResult;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,LoaderManager.LoaderCallbacks<MovieResult> {
+
+
     private final String LOG_CAT = MainActivity.class.getSimpleName();
     private static  String KEY_PARAM ="api_key";
     public  static  String API_KEY=BuildConfig.THE_MOVIE_DB_API_TOKEN;
@@ -52,6 +57,20 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @BindView(R.id.img_no_network) ImageView mImageError ;
     private static final  int LOADER_ID=123;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
+
+    public static final String[] MAIN_MOVIES_PROJECTION = {
+            MovieContract.MovieEntry._ID,
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_TITLE,
+            MovieContract.MovieEntry.COLUMN_IMAGE_URL
+
+    };
+
+    public static final int INDEX_ID= 0;
+    public static final int INDEX_MOVIE_ID= 1;
+    public static final int INDEX_MOVIE_TITLE=2;
+    public static final int INDEX_MOVIE_IMAGE_URL=3;
+
 
 
 
@@ -127,6 +146,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             return true;
         }
         else if (id == R.id.action_favorite){
+         List<Movie>movieList = new ArrayList<Movie>();
+         Movie  movie;
+            Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, MAIN_MOVIES_PROJECTION, null, null, null);
+             if(cursor.getCount()!=0 && cursor.moveToFirst()){
+                 FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter(getApplicationContext(),cursor);
+                 mRecyclerView.setAdapter(favoriteMovieAdapter);
+
+
+
+                 Log.d(LOG_CAT," this it the number of cursor"+cursor.getCount());
+
+             }
 
             return true;
         }
@@ -180,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             public void deliverResult(MovieResult data) {
                 movies=data.getResults();
                 mAdapter.setMovies(data.getResults());
+                mRecyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
                 super.deliverResult(data);
             }

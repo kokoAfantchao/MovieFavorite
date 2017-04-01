@@ -43,10 +43,8 @@ public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder
         //create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_view_holder, parent, false);
-
-        // set the view's size, margins, paddings and layout parameters
+        //set the view's size, margins, paddings and layout parameters
         ViewHolder vh = new ViewHolder(v);
-
         return vh;
     }
 
@@ -59,7 +57,11 @@ public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder
 
 
     }
+    public void  updateMovieDat(List<Movie> movies){
+        this.movies= movies;
+        notifyDataSetChanged();
 
+    }
     @Override
     public int getItemCount() {
         return movies.size();
@@ -99,7 +101,7 @@ public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder
 
         public void setUpview(){
             textViewTitle.setText(movie.getTitle());
-            textViewRating.setText(context.getString(R.string.tv_rating)+" "+movie.getVote_average().toString());
+            textViewRating.setText(context.getString(R.string.tv_rating)+""+movie.getVote_average().toString());
         }
 
         @Override

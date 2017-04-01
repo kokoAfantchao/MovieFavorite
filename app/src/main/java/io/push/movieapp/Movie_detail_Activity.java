@@ -69,7 +69,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
     private String imageURL;
     private ReviewFragment reviewFragment;
     private VideoFragment  videoFragment;
-    private static Boolean isFavorite = false;
+    private Boolean isFavorite = false;
     List<Review> reviwResults = new ArrayList<Review>();
     List<Video> videoResults = new ArrayList<Video>();
 
