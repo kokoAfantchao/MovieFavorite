@@ -19,6 +19,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -172,6 +173,8 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
     }
 
 
+
+
     @Override
     public Loader<QueryResult> onCreateLoader(int id, Bundle args) {
         return  new AsyncTaskLoader<QueryResult>(this) {
@@ -207,6 +210,13 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
 
             }
         };
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+       // if (item.getItemId()== Men)
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.push.movieapp.Adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.Settings;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,15 +24,11 @@ import io.push.movieapp.R;
  * Created by nestorkokoafantchao on 3/31/17.
  */
 
-public class FavoriteMovieAdapter extends CursorRecyclerViewAdapter<FavoriteMovieAdapter.MovieViewHolder> {
+public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdapter.MovieViewHolder>{
 
     private static final String LOG_CAT = FavoriteMovieAdapter.class.toString();
 
      private Cursor cursor;
-    public FavoriteMovieAdapter(Context context, Cursor cursor) {
-        super(context, cursor);
-    }
-
 
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,23 +37,31 @@ public class FavoriteMovieAdapter extends CursorRecyclerViewAdapter<FavoriteMovi
                 .inflate(R.layout.card_view_holder, parent, false);
         //set the view's size, margins, paddings and layout parameters
         MovieViewHolder vh = new MovieViewHolder(v);
-        return vh;
 
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(MovieViewHolder holder, int position) {
+        cursor.moveToPosition(position);
+        holder.loadImage(cursor.getString(MainActivity.INDEX_MOVIE_IMAGE_URL));
+        holder.textViewTitle.setText(cursor.getString(MainActivity.INDEX_MOVIE_TITLE));
+        Log.d(LOG_CAT," this is you url for image"+cursor.getString(MainActivity.INDEX_MOVIE_IMAGE_URL));
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        if(cursor!= null)
+            return  cursor.getCount();
+
+        return 0;
     }
 
-    @Override
-    public void onBindViewHolder(MovieViewHolder viewHolder, Cursor cursor) {
-
-        viewHolder.loadImage(cursor.getColumnName(MainActivity.INDEX_MOVIE_IMAGE_URL));
-        Log.d(LOG_CAT," this is my Ulr "+cursor.getColumnName(MainActivity.INDEX_MOVIE_IMAGE_URL));
-
-
+    public void swapCursor(Cursor cursor) {
+        this.cursor=cursor;
+        notifyDataSetChanged();
     }
+
 
     public class  MovieViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.image_movie) ImageView imageView;
