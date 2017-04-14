@@ -90,5 +90,6 @@
     <string name="text_tab_video">VIDEO</string>
     <string name="action_play">Play</string>
     <string name="action_favorite">Favorite</string>
+    <string name="no_app">No app to complite Action</string>
 
 </resources>

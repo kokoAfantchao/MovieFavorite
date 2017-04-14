@@ -1,4 +1,4 @@
-package io.push.movieapp.Adapter;
+package io.push.movieapp.adapter;
 
 /**
  * Created by nestorkokoafantchao on 4/1/17.

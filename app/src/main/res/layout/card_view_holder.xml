@@ -8,8 +8,8 @@
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        card_view:cardElevation="8dp"
-        card_view:cardCornerRadius="2dp">
+        card_view:cardElevation="@dimen/margin_medium"
+        card_view:cardCornerRadius="@dimen/cardview_default_radius">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,8 +35,8 @@
                     android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:maxLines="1"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:maxLines="@dimen/defaut_num_one"
                     android:text="good app movies"
                     android:textColor="@color/colorAccent"
                     android:textSize="16dp" />
@@ -45,8 +45,8 @@
                     android:id="@+id/tv_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:maxLines="1"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:maxLines="@dimen/defaut_num_one"
                     android:gravity="right"
                     android:layout_gravity="right"
                     android:textColor="@color/colorPrimaryText"

@@ -1,4 +1,4 @@
-package io.push.movieapp.Adapter;
+package io.push.movieapp.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,11 +8,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.Entity.Review;
+import io.push.movieapp.entity.Review;
 import io.push.movieapp.R;
 
 /**

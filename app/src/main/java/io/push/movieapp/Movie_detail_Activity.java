@@ -1,10 +1,9 @@
 package io.push.movieapp;
 
 import android.content.ContentValues;
-import android.icu.text.LocaleDisplayNames;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -22,8 +21,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -34,20 +31,20 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.Adapter.MyListAdapter;
-import io.push.movieapp.Adapter.ReviewAdapter;
-import io.push.movieapp.Adapter.VideoAdapter;
-import io.push.movieapp.Entity.Movie;
-import io.push.movieapp.Entity.MovieContract;
-import io.push.movieapp.Entity.Review;
-import io.push.movieapp.Entity.Video;
-import io.push.movieapp.QueryResult.ReviewResult;
-import io.push.movieapp.QueryResult.VideoResult;
-import io.push.movieapp.Service.MovieService;
-import io.push.movieapp.Service.ServiceGeneratore;
+import io.push.movieapp.adapter.MyListAdapter;
+import io.push.movieapp.adapter.ReviewAdapter;
+import io.push.movieapp.adapter.VideoAdapter;
+import io.push.movieapp.entity.MovieContract;
+import io.push.movieapp.entity.Review;
+import io.push.movieapp.entity.Video;
+import io.push.movieapp.queryResult.ReviewResult;
+import io.push.movieapp.queryResult.VideoResult;
+import io.push.movieapp.service.MovieService;
+import io.push.movieapp.service.ServiceGeneratore;
 import io.push.movieapp.fragment.OverViewFragment;
 import io.push.movieapp.fragment.ReviewFragment;
 import io.push.movieapp.fragment.VideoFragment;
+import io.realm.FavoriteMovieRealmProxy;
 import retrofit2.Call;
 
 public class Movie_detail_Activity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie_detail_Activity.QueryResult>{
@@ -102,7 +99,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
                 else
                     isFavorite=true;
 
-                   favoriteMovie(994);
+                   favoriteMovie();
             }
         });
         //collapsingToolbar.setTitle();
@@ -147,27 +144,18 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
         viewPager.setAdapter(adapter);
     }
 
-    public void favoriteMovie(Integer movieId){
+    public void favoriteMovie(){
         if(isFavorite){
-            fab_favorite.setImageResource(R.drawable.ic_favorite_white_24dp);
-           //TODO Save the favorite in th database
+            //TODO Save the favorite in th database
             ContentValues contentValues = new ContentValues();
             contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,movieId);
             contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE,title);
             contentValues.put(MovieContract.MovieEntry.COLUMN_IMAGE_URL,imageURL);
-
-            Uri insert = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
-            if(insert!= null ){
-                Toast.makeText(getApplicationContext(),"Added to favorites",Toast.LENGTH_LONG).show();
-            }
+            new FavoriteAsync().execute(contentValues);
         }
         else {
-            fab_favorite.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-            //TODO remove the favorite in th database
-            int delete = getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(movieId.toString()).build(), null, null);
-            if(delete>0){
-                Toast.makeText(getApplicationContext(),"Removed from favorites",Toast.LENGTH_LONG).show();
-            }
+           new FavoriteAsync().execute();
+
         }
 
     }
@@ -264,6 +252,38 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
                      "videoResult=" + videoResult +
                      ",reviewResult=" + reviewResult +
                      '}';
+         }
+     }
+
+
+     public  class FavoriteAsync extends AsyncTask<ContentValues ,Void,Integer>{
+         Uri insert = null ;
+         Integer result =  new Integer(-2);
+         @Override
+         protected Integer doInBackground(ContentValues ... params) {
+
+             if (params.length!=0){
+                 insert = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,params[0]);
+             }
+             else{
+                 result = getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(movieId.toString()).build(), null, null);
+             }
+
+
+
+             return result;
+         }
+
+         @Override
+         protected void onPostExecute(Integer integer) {
+             if(insert!= null ){
+                 fab_favorite.setImageResource(R.drawable.ic_favorite_white_24dp);
+                 Toast.makeText(getApplicationContext(),"Added to favorites",Toast.LENGTH_LONG).show();
+             }
+             if(integer>0&&integer!= -2) {
+                 fab_favorite.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                 Toast.makeText(getApplicationContext(),"Removed from favorites",Toast.LENGTH_LONG).show();
+             }
          }
      }
 

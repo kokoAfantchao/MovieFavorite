@@ -1,7 +1,6 @@
 package io.push.movieapp.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -16,8 +15,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.Adapter.ReviewAdapter;
-import io.push.movieapp.Entity.Review;
+import io.push.movieapp.adapter.ReviewAdapter;
+import io.push.movieapp.entity.Review;
 import io.push.movieapp.R;
 
 

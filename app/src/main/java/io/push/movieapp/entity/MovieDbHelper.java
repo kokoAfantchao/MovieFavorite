@@ -1,4 +1,4 @@
-package io.push.movieapp.Entity;
+package io.push.movieapp.entity;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -36,7 +36,7 @@ public class MovieDbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS"+MovieContract.MovieEntry.TABLE_NAME);
+        db.execSQL("ALTER TABLE IF EXISTS"+MovieContract.MovieEntry.TABLE_NAME);
         onCreate(db);
 
     }

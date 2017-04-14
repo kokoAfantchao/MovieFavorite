@@ -21,10 +21,10 @@
         android:layout_weight="4"
         android:weightSum="1">
         <TextView
-            android:layout_margin="4dp"
+            android:layout_margin="@dimen/margin_small"
             android:id="@+id/tv_video_name"
             android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:textSize="20sp" />
+            android:layout_height="@dimen/margin_small"
+            android:textSize="@dimen/text_sz_large" />
     </LinearLayout>
 </LinearLayout>

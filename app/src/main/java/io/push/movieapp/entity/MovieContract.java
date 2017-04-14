@@ -1,4 +1,4 @@
-package io.push.movieapp.Entity;
+package io.push.movieapp.entity;
 
 import android.net.Uri;
 import android.provider.BaseColumns;

@@ -1,4 +1,4 @@
-package io.push.movieapp.Entity;
+package io.push.movieapp.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

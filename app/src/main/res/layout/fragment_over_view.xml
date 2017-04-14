@@ -11,14 +11,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="4dp">
+            android:layout_margin="@dimen/margin_small">
             <TextView
                 android:visibility="invisible"
                 android:id="@+id/tv_detail_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimaryText"
-                android:textSize="30sp"
+                android:textSize="@dimen/text_sz_extra_large"
                 android:text="@string/text_over_view"
                 />
             <TextView
@@ -32,9 +32,9 @@
             android:id="@+id/tv_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_sz_large"
             android:fontFamily="sans-serif"
-            android:layout_margin="4dp"
+            android:layout_margin="@dimen/margin_small"
             />
         <RatingBar
             android:layout_width="wrap_content"

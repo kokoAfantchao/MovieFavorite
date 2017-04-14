@@ -1,9 +1,7 @@
-package io.push.movieapp.Adapter;
+package io.push.movieapp.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.Settings;
-import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +14,6 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.Entity.Movie;
 import io.push.movieapp.MainActivity;
 import io.push.movieapp.R;
 

@@ -16,5 +16,13 @@
 
     <dimen name="image_sz_medium">250dp</dimen>
 
+    <dimen name="defaut_num_one">1</dimen>
+    <dimen name="defaut_num_two">2</dimen>
+    <dimen name="defaut_num_three">3</dimen>
+    <dimen name="defaut_num_four">4</dimen>
+    <dimen name="defaut_num_seven">7</dimen>
+    
+    <dimen name="defaut_image_layout">120dp</dimen>
+    <dimen name="elevation_sz_medium">18dp</dimen>
 
 </resources>

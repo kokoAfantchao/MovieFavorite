@@ -1,4 +1,4 @@
-package io.push.movieapp.Adapter;
+package io.push.movieapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.push.movieapp.Movie_detail_Activity;
 import io.push.movieapp.R;
-import io.push.movieapp.Entity.Movie;
+import io.push.movieapp.entity.Movie;
 
 /**
  * Created by nestorkokoafantchao on 12/9/16.

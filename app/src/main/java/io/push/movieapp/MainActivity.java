@@ -7,11 +7,9 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
@@ -27,22 +25,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.Adapter.FavoriteMovieAdapter;
-import io.push.movieapp.Adapter.MyListAdapter;
-import io.push.movieapp.Entity.MovieContract;
-import io.push.movieapp.QueryResult.MovieResult;
-import io.push.movieapp.Service.MovieService;
-import io.push.movieapp.Service.ServiceGeneratore;
-import io.push.movieapp.Entity.Movie;
-import io.push.movieapp.QueryResult.MovieResult;
+import io.push.movieapp.adapter.FavoriteMovieAdapter;
+import io.push.movieapp.adapter.MyListAdapter;
+import io.push.movieapp.entity.MovieContract;
+import io.push.movieapp.queryResult.MovieResult;
+import io.push.movieapp.service.MovieService;
+import io.push.movieapp.service.ServiceGeneratore;
+import io.push.movieapp.entity.Movie;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
@@ -62,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private static final  int MOVIE_LOADER_ID=500;
     private static final int FAVORITE_LOALDER_ID=501;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
-
     public static final String[] MAIN_MOVIES_PROJECTION = {
             MovieContract.MovieEntry._ID,
             MovieContract.MovieEntry.COLUMN_MOVIE_ID,
@@ -128,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("movies",(ArrayList<? extends Parcelable>) movies);
-       // getSupportLoaderManager().restartLoader(LOADER_ID, null,this);
+
         super.onSaveInstanceState(outState);
     }
 
@@ -197,8 +191,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         switch (id) {
             case MOVIE_LOADER_ID:
-                return new AsyncTaskLoader<io.push.movieapp.QueryResult.MovieResult>(this) {
-                    private io.push.movieapp.QueryResult.MovieResult result;
+                return new AsyncTaskLoader<io.push.movieapp.queryResult.MovieResult>(this) {
+                    private io.push.movieapp.queryResult.MovieResult result;
 
                     @Override
                     protected void onStartLoading() {

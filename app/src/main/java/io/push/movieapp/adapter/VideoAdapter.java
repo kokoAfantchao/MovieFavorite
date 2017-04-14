@@ -1,5 +1,6 @@
-package io.push.movieapp.Adapter;
+package io.push.movieapp.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -9,16 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.VideoView;
+import android.widget.Toast;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.Entity.Video;
+import io.push.movieapp.entity.Video;
 import io.push.movieapp.R;
 
 /**
@@ -70,8 +69,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         public void onClick(View v) {
 
              Intent intent   = new Intent(Intent.ACTION_VIEW,uri);
-             v.getContext().startActivity(intent);
-             Log.d(this.getClass().toString(),"this is the Url "+ uri.toString());
+             Context myContext= v.getContext();
+
+
+            if (intent.resolveActivity(myContext.getPackageManager()) != null) {
+                myContext.startActivity(intent);
+                Log.d(this.getClass().toString(),"this is the Url "+ uri.toString());
+            }
+            else {
+                Toast.makeText(myContext,myContext.getString(R.string.no_app),Toast.LENGTH_SHORT);
+            }
+
         }
     }
 

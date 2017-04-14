@@ -13,7 +13,7 @@
         android:id="@+id/myrecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/margin_small"
 
         >
 
@@ -21,8 +21,8 @@
     </android.support.v7.widget.RecyclerView>
   <ImageView
       android:id="@+id/img_no_network"
-      android:layout_width="120dp"
-      android:layout_height="120dp"
+      android:layout_width="@dimen/defaut_image_layout"
+      android:layout_height="@dimen/defaut_image_layout"
       android:visibility="invisible"
       android:layout_centerInParent="true"
       android:background="@drawable/ic_signal_cellular_connected_no_internet_0_bar_black_36dp"

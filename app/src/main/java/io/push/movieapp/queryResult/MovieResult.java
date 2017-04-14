@@ -1,8 +1,8 @@
-package io.push.movieapp.QueryResult;
+package io.push.movieapp.queryResult;
 
 import java.util.List;
 
-import io.push.movieapp.Entity.Movie;
+import io.push.movieapp.entity.Movie;
 
 /**
  * Created by nestorkokoafantchao on 3/7/17.

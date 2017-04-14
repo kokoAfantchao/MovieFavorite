@@ -8,14 +8,14 @@
         android:id="@+id/tv_review_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:textSize="@dimen/text_sz_large"
         android:textColor="@color/colorPrimary"
         android:text="Jym care"/>
     <TextView
     android:id="@+id/tv_review_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="18sp"
+    android:textSize="@dimen/text_sz_medium"
     android:maxLines="15"
     android:text="This is not the first movie ever but we have to do it like the first so it so exicted "    />
 
