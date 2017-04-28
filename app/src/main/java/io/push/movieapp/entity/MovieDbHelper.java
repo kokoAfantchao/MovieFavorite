@@ -12,7 +12,7 @@ public class MovieDbHelper extends SQLiteOpenHelper{
 
     private static final String DATABASE_NAME="movie.db";
 
-    private static final int VERSION =3;
+    private static final int VERSION =5;
 
 
     MovieDbHelper(Context  context){
@@ -28,6 +28,11 @@ public class MovieDbHelper extends SQLiteOpenHelper{
                 MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY, " +
                 MovieContract.MovieEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_OVERVIEW+" TEXT NOT NULL,"+
+                MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE+" REAL NOT NULL,"+
+                MovieContract.MovieEntry.COLUMN_RELEASE_DATE+" TEXT NOT NULL,"+
+                MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE+" BOOLEAN NOT NULL,"+
+                MovieContract.MovieEntry.COLUMN_FAVORITE+" BOOLEAN NOT NULL,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID   + " INTEGER NOT NULL);";
 
         db.execSQL(CREATE_TABLE);
@@ -36,7 +41,7 @@ public class MovieDbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("ALTER TABLE IF EXISTS"+MovieContract.MovieEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+MovieContract.MovieEntry.TABLE_NAME);
         onCreate(db);
 
     }

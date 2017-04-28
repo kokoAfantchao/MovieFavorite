@@ -14,18 +14,20 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.MainActivity;
 import io.push.movieapp.R;
+
+import static io.push.movieapp.service.MovieJobUtils.INDEX_MOVIE_IMAGE_URL;
+import static io.push.movieapp.service.MovieJobUtils.INDEX_MOVIE_TITLE;
 
 /**
  * Created by nestorkokoafantchao on 3/31/17.
  */
 
-public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdapter.MovieViewHolder>{
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
 
-    private static final String LOG_CAT = FavoriteMovieAdapter.class.toString();
+    private static final String LOG_CAT = MovieAdapter.class.toString();
 
-     private Cursor cursor;
+    private Cursor cursor;
 
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,19 +43,21 @@ public class FavoriteMovieAdapter extends RecyclerView.Adapter<FavoriteMovieAdap
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         cursor.moveToPosition(position);
-        holder.loadImage(cursor.getString(MainActivity.INDEX_MOVIE_IMAGE_URL));
-        holder.textViewTitle.setText(cursor.getString(MainActivity.INDEX_MOVIE_TITLE));
-        Log.d(LOG_CAT," this is you url for image"+cursor.getString(MainActivity.INDEX_MOVIE_IMAGE_URL));
+        holder.loadImage(cursor.getString(INDEX_MOVIE_IMAGE_URL));
+        holder.textViewTitle.setText(cursor.getString(INDEX_MOVIE_TITLE));
+        Log.d(LOG_CAT," this is you url for image"+cursor.getString(INDEX_MOVIE_IMAGE_URL));
+        cursor.close();
     }
 
     @Override
     public int getItemCount() {
-        if(cursor!= null)
-            return  cursor.getCount();
+        if(cursor!= null) {
+            Log.d(LOG_CAT,"cursor COmpt"+cursor.getCount());
+            return cursor.getCount();
 
+        }
         return 0;
     }
-
     public void swapCursor(Cursor cursor) {
         this.cursor=cursor;
         notifyDataSetChanged();

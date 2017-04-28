@@ -32,6 +32,16 @@
             android:authorities="io.push.movieapp"
             android:name="io.push.movieapp.entity.MovieContentProvider"
             android:exported="false"/>
+        <service android:name=".service.MovieJobService"
+                  android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
+        <service android:name=".service.MovieBackGroundService"
+            android:exported="false">
+
+        </service>
 
         <activity
             android:name=".SettingsActivity"

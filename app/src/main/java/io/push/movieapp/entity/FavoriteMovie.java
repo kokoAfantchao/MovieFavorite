@@ -14,6 +14,7 @@ public class FavoriteMovie  extends RealmObject{
     private String backdrop_path;
     private Double  vote_average;
 
+
     public int getId() {
         return id;
     }

@@ -31,17 +31,22 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.push.movieapp.adapter.FavoriteMovieAdapter;
+import io.push.movieapp.adapter.MovieAdapter;
 import io.push.movieapp.adapter.MyListAdapter;
 import io.push.movieapp.entity.MovieContract;
 import io.push.movieapp.queryResult.MovieResult;
+import io.push.movieapp.service.MovieJobTask;
+import io.push.movieapp.service.MovieJobUtils;
 import io.push.movieapp.service.MovieService;
 import io.push.movieapp.service.ServiceGeneratore;
 import io.push.movieapp.entity.Movie;
 import retrofit2.Call;
 
+import static io.push.movieapp.service.MovieJobUtils.MAIN_MOVIES_PROJECTION;
+
+
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
-        LoaderCallbacks<MovieResult>{
+        LoaderCallbacks<Cursor>{
 
 
     private final String LOG_CAT = MainActivity.class.getSimpleName();
@@ -50,28 +55,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public  static  String POPULAR_MOVIE="popular";
     public  static  String TOP_RATE_MOVIE="top_rated";
     @BindView(R.id.myrecycler) RecyclerView mRecyclerView;
-    private MyListAdapter mAdapter;
+    private MovieAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<Movie> movies = new ArrayList<>();
     @BindView(R.id.img_no_network) ImageView mImageError ;
     private static final  int MOVIE_LOADER_ID=500;
     private static final int FAVORITE_LOALDER_ID=501;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
-    public static final String[] MAIN_MOVIES_PROJECTION = {
-            MovieContract.MovieEntry._ID,
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-            MovieContract.MovieEntry.COLUMN_TITLE,
-            MovieContract.MovieEntry.COLUMN_IMAGE_URL
-
-    };
-
-    public static final int INDEX_ID= 0;
-    public static final int INDEX_MOVIE_ID= 1;
-    public static final int INDEX_MOVIE_TITLE=2;
-    public static final int INDEX_MOVIE_IMAGE_URL=3;
-
-
-
 
 
     @Override
@@ -79,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if(savedInstanceState!=null ){
-            movies= (List<Movie>)savedInstanceState.get("movies");
+
 
         }
         ButterKnife.bind(this);
@@ -99,11 +89,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
         // specify an adapter (see also next example)
-        mAdapter = new MyListAdapter();
-        mAdapter.setMovies(movies);
+        mAdapter = new MovieAdapter();
         mRecyclerView.setAdapter(mAdapter);
+
+
+
         getSupportLoaderManager().initLoader(MOVIE_LOADER_ID,null,this);
+        MovieJobUtils.initialize(this);
+
         //getSupportLoaderManager().initLoader(FAVORITE_LOALDER_ID,null,new FavoriteLoader());
+
 
          boolean online = isOnline();
         if (online){
@@ -116,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
 
       PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
 
     }
 
@@ -156,10 +152,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             Cursor cursor= cursorLoader.loadInBackground();
 
             if(cursor.getCount()!=0 && cursor.moveToFirst()){
-                 FavoriteMovieAdapter favoriteMovieAdapter = new FavoriteMovieAdapter();
+                 MovieAdapter movieAdapter = new MovieAdapter();
                  mRecyclerView.removeAllViews();
-                 favoriteMovieAdapter.swapCursor(cursor);
-                 mRecyclerView.setAdapter(favoriteMovieAdapter);
+                 movieAdapter.swapCursor(cursor);
+                 mRecyclerView.setAdapter(movieAdapter);
                  Log.d(LOG_CAT," this it the number of cursor"+cursor.getCount());
              }
 
@@ -187,56 +183,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    public Loader <MovieResult> onCreateLoader(int id, Bundle args) {
-
+    public Loader <Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader cursorLoader;
         switch (id) {
             case MOVIE_LOADER_ID:
-                return new AsyncTaskLoader<io.push.movieapp.queryResult.MovieResult>(this) {
-                    private io.push.movieapp.queryResult.MovieResult result;
-
-                    @Override
-                    protected void onStartLoading() {
-                        if (result != null) {
-                            deliverResult(result);
-                        } else {
-                            forceLoad();
-                        }
-
-                        super.onStartLoading();
-                    }
-
-                    @Override
-                    public MovieResult loadInBackground() {
-                        try {
-                            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                            String sharedPrefString = sharedPref.getString(SettingsActivity.PREF_SORT_TYPE_KEY, POPULAR_MOVIE);
-                            Log.d(LOG_CAT, "++++++Share preference out put  " + sharedPrefString);
-                            MovieService movieService = ServiceGeneratore.createService(MovieService.class);
-                            Call<MovieResult> repos = movieService.listmovie(sharedPrefString, API_KEY);
-                           // Log.d(LOG_CAT, "buffer reader " + ReponseMovies.toString() + "output");
-                            return repos.execute().body();
-                        } catch (IOException e) {
-                            Log.e(LOG_CAT, "Error" + e.toString(), e);
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public void deliverResult(MovieResult data) {
-                        result = data;
-                        super.deliverResult(data);
-
-                    }
-                };
-
-
-
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                String preferenceMovie = sharedPreferences.getString(SettingsActivity.PREF_SORT_TYPE_KEY, POPULAR_MOVIE);
+                return new CursorLoader(this,
+                        MovieContract.MovieEntry.CONTENT_URI,
+                        MAIN_MOVIES_PROJECTION,
+                        //MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE+"=="+isPopular(preferenceMovie),
+                        null,
+                        null,
+                        null
+                );
 
             default:
-
                 return null;
-
-
         }
 
     }
@@ -249,32 +212,32 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    public void onLoadFinished(Loader<MovieResult> loader, MovieResult data) {
+    public void onLoadFinished(Loader<Cursor> loader,Cursor data) {
         if(data!= null ) {
-            switch (loader.getId()){
-                case MOVIE_LOADER_ID :
-                    MovieResult movieResult =data;
-                    movies= movieResult.getResults();
-                    mAdapter.setMovies(movieResult.getResults());
-                    mRecyclerView.setAdapter(mAdapter);
-                    mAdapter.notifyDataSetChanged();
-                    break;
+            mAdapter.swapCursor(data);
+            Log.d(LOG_CAT,"cursore count"+ data.getCount());
 
-
-            }
+        }else if (data.getCount()==0) {
 
         }
 
-    }
+        }
+
+
 
     @Override
-    public void onLoaderReset(Loader<MovieResult> loader) {
-
+    public void onLoaderReset(Loader<Cursor> loader) {
+       mAdapter.swapCursor(null);
     }
 
 
 
 
+  public static String isPopular(String sType){
+      if(sType==POPULAR_MOVIE)
+          return  "1";
 
+          return "0";
+  }
 
 }

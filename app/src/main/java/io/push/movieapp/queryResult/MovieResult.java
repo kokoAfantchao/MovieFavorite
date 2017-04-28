@@ -10,7 +10,7 @@ import io.push.movieapp.entity.Movie;
 
 public class MovieResult {
     private  Integer page ;
-    private List<Movie> results;
+    private  List<Movie> results;
     private  Integer totale_results;
     private  Integer totale_pages;
 

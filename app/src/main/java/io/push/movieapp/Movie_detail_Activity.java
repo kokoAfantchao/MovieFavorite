@@ -93,11 +93,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
         fab_favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isFavorite)
-                    isFavorite=false;
-
-                else
-                    isFavorite=true;
+                isFavorite = !isFavorite;
 
                    favoriteMovie();
             }

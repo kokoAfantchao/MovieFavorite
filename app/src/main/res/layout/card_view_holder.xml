@@ -36,9 +36,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_small"
-                    android:maxLines="@dimen/defaut_num_one"
+                    android:maxLines="1"
                     android:text="good app movies"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/accent"
                     android:textSize="16dp" />
 
                 <TextView
@@ -46,10 +46,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/margin_small"
-                    android:maxLines="@dimen/defaut_num_one"
+                    android:maxLines="1"
                     android:gravity="right"
                     android:layout_gravity="right"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/primary_text"
                     android:text="@string/tv_rating"
                     />
 

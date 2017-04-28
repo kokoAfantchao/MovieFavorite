@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.11"
         android:text="@string/action_play"
-        android:background="@color/colorAccent"
-        android:textColor="@color/colorIcons"
+        android:background="@color/accent"
+        android:textColor="@color/icons"
         android:drawableLeft="@drawable/ic_play_circle_outline_white_24dp"/>
 
     <LinearLayout

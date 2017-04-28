@@ -65,9 +65,41 @@ public class MovieContentProvider extends ContentProvider {
 
                 throw new UnsupportedOperationException("Unsupport Uri"+ uri);
         }
-
+     getContext().getContentResolver().notifyChange(uri,null);
 
         return  cursorReturn;
+    }
+
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        SQLiteDatabase sqLiteDatabase = movieDbHelper.getWritableDatabase();
+        int rowInset=0;
+        uriMatcher.match(uri);
+                switch(uriMatcher.match(uri)){
+                    case MOVIES:
+                       sqLiteDatabase.beginTransaction();
+                        try {
+                        for (ContentValues contentValue : values){
+                            long insert = sqLiteDatabase.insert(MovieContract.MovieEntry.TABLE_NAME, null, contentValue);
+                            if (insert != -1) {
+                                rowInset++;
+                            }
+                        }
+                        sqLiteDatabase.setTransactionSuccessful();
+
+                        }finally {
+                            sqLiteDatabase.close();
+                        }
+
+                        if (rowInset> 0) {
+                            getContext().getContentResolver().notifyChange(uri, null);
+                        }
+                        return  rowInset;
+
+                    default:
+                        return super.bulkInsert(uri, values);
+
+                }
     }
 
     @Nullable
