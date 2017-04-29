@@ -25,6 +25,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.amitshekhar.DebugDB;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -214,7 +216,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public void onLoadFinished(Loader<Cursor> loader,Cursor data) {
         if(data!= null ) {
+            DebugDB.getAddressLog();
             mAdapter.swapCursor(data);
+
             Log.d(LOG_CAT,"cursore count"+ data.getCount());
 
         }else if (data.getCount()==0) {

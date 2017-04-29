@@ -3,6 +3,7 @@ package io.push.movieapp.service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ import static io.push.movieapp.MainActivity.API_KEY;
  */
 
 public class MovieJobTask {
-
+  private static String TAG_LOG=MovieJobTask.class.getName();
 
 
     synchronized public static void Movie(Context context)  {
@@ -35,8 +36,12 @@ public class MovieJobTask {
 
                     ContentValues[] contentValues = MovieJobUtils.MoviesToContentValues(context, movieResult.getResults(),movieResult1.getResults());
                     ContentResolver contentResolver = context.getContentResolver();
-                    contentResolver.bulkInsert(MovieContract.MovieEntry.CONTENT_URI,contentValues);
-                }
+                int insert = contentResolver.bulkInsert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
+                Log.d(TAG_LOG,"NUmber of insertion "+insert);
+                Log.d(TAG_LOG,"Number of toprate "+movieResult1.getResults().size());
+                Log.d(TAG_LOG,"Number of Popular "+movieResult.getResults().size());
+
+            }
 
 
 

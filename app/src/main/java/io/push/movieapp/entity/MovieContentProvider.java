@@ -33,7 +33,6 @@ public class MovieContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        getContext();
        movieDbHelper= new MovieDbHelper(getContext());
         return  true;
     }

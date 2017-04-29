@@ -28,9 +28,9 @@ import io.push.movieapp.entity.MovieContract;
 
 public class MovieJobUtils {
 
-    private static final int SYNC_INTERVAL_HOURS = 24;
+    private static final int SYNC_INTERVAL_HOURS = 3;
     private static final int SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS);
-    private static final int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS /24;
+    private static final int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS/3;
 
     public static final String[] MAIN_MOVIES_PROJECTION = {
             MovieContract.MovieEntry._ID,
@@ -90,9 +90,10 @@ public class MovieJobUtils {
     }
 
     public static ContentValues[] MoviesToContentValues(@NonNull Context context,@NonNull List<Movie> moviesPopural,List<Movie>moviesTopRate){
-        int size = moviesPopural.size();
-        ContentValues[] contentValues = new ContentValues[size];
-        for(int i=0; i<size;i++){
+        int sizePopular = moviesPopural.size();
+        int sizeTopRate = moviesPopural.size();
+        ContentValues[] contentValues = new ContentValues[sizePopular+sizeTopRate];
+        for(int i=0; i<sizePopular;i++){
          ContentValues values = new ContentValues ();
            values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,moviesPopural.get(i).getId());
            values.put(MovieContract.MovieEntry.COLUMN_TITLE,moviesPopural.get(i).getTitle());
@@ -104,17 +105,16 @@ public class MovieJobUtils {
            values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,moviesPopural.get(i).getRelease_date().toString());
            contentValues[i]=values;
         }
-        size = moviesTopRate.size();
-        for(int i=0; i<size;i++){
+        for(int i=sizePopular; i<sizePopular+sizeTopRate;i++){
             ContentValues values = new ContentValues ();
-            values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,moviesTopRate.get(i).getId());
-            values.put(MovieContract.MovieEntry.COLUMN_TITLE,moviesTopRate.get(i).getTitle());
-            values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,moviesTopRate.get(i).getOverview());
-            values.put(MovieContract.MovieEntry.COLUMN_IMAGE_URL,moviesTopRate.get(i).getBackdrop_path());
+            values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,moviesTopRate.get(i-sizeTopRate).getId());
+            values.put(MovieContract.MovieEntry.COLUMN_TITLE,moviesTopRate.get(i-sizeTopRate).getTitle());
+            values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,moviesTopRate.get(i-sizeTopRate).getOverview());
+            values.put(MovieContract.MovieEntry.COLUMN_IMAGE_URL,moviesTopRate.get(i-sizeTopRate).getBackdrop_path());
             values.put(MovieContract.MovieEntry.COLUMN_FAVORITE,false);
             values.put(MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE,"FALSE");
-            values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,moviesTopRate.get(i).getVote_average());
-            values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,moviesTopRate.get(i).getRelease_date().toString());
+            values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,moviesTopRate.get(i-sizeTopRate).getVote_average());
+            values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,moviesTopRate.get(i-sizeTopRate).getRelease_date().toString());
             contentValues[i]=values;
         }
         return  contentValues ;

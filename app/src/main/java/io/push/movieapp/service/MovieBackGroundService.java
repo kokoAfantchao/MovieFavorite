@@ -19,4 +19,6 @@ public class MovieBackGroundService extends IntentService{
         MovieJobTask.Movie(this);
 
     }
+
+
 }
