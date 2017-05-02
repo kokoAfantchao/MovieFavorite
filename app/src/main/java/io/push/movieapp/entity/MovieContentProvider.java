@@ -3,12 +3,14 @@ package io.push.movieapp.entity;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by nestorkokoafantchao on 3/31/17.
@@ -18,6 +20,9 @@ public class MovieContentProvider extends ContentProvider {
 
     private static  final int MOVIES=200;
     private static  final int MOVIES_WITH_ID=201;
+    private static  final int MOVIES_FAVORITE=202;
+    private static  final int MOVIES_POPURAL=203;
+    private static final String TAG_LOG = MovieContentProvider.class.toString();
     private UriMatcher uriMatcher =  buildUriMatcher();
     private MovieDbHelper movieDbHelper;
 
@@ -27,6 +32,10 @@ public class MovieContentProvider extends ContentProvider {
         UriMatcher  matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI(MovieContract.AUTHORITY,MovieContract.PATH_MOVIES,MOVIES);
         matcher.addURI(MovieContract.AUTHORITY,MovieContract.PATH_MOVIES+"/#",MOVIES_WITH_ID);
+        matcher.addURI(MovieContract.AUTHORITY,MovieContract.PATH_MOVIES+"/"+MovieContract.PATH_FAVORITE_MOVIES+"/*",MOVIES_FAVORITE);
+        matcher.addURI(MovieContract.AUTHORITY,MovieContract.PATH_MOVIES+"/"+MovieContract.PATH_POPULAR_MOVIES+"/*",MOVIES_POPURAL);
+
+
         return  matcher;
 
     }
@@ -44,7 +53,7 @@ public class MovieContentProvider extends ContentProvider {
         SQLiteDatabase database = movieDbHelper.getReadableDatabase();
         int match = uriMatcher.match(uri);
         Cursor cursorReturn ;
-
+        String pathSegment;
         switch(match){
             case MOVIES:
                  cursorReturn =
@@ -56,9 +65,35 @@ public class MovieContentProvider extends ContentProvider {
                          null,
                          sortOrder
                        );
-
+                break;
+            case  MOVIES_FAVORITE:
+                pathSegment   = uri.getPathSegments().get(2);
+                cursorReturn =
+                        database.query(MovieContract.MovieEntry.TABLE_NAME,
+                                projection,
+                                MovieContract.MovieEntry.COLUMN_FAVORITE+"=?",
+                                new String[]{pathSegment},
+                                null,
+                                null,
+                                sortOrder
+                        );
+                Log.d(TAG_LOG,(pathSegment));
 
                 break;
+            case  MOVIES_POPURAL:
+                pathSegment = uri.getPathSegments().get(2);
+                cursorReturn =
+                        database.query(MovieContract.MovieEntry.TABLE_NAME,
+                                projection,
+                                MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE+"=?",
+                                new String[]{pathSegment},
+                                null,
+                                null,
+                                sortOrder
+                        );
+                Log.d(TAG_LOG,(pathSegment));
+                break;
+
 
             default:
 
@@ -87,7 +122,7 @@ public class MovieContentProvider extends ContentProvider {
                         sqLiteDatabase.setTransactionSuccessful();
 
                         }finally {
-                            sqLiteDatabase.close();
+                            sqLiteDatabase.endTransaction();
                         }
 
                         if (rowInset> 0) {
@@ -143,12 +178,18 @@ public class MovieContentProvider extends ContentProvider {
         SQLiteDatabase database = movieDbHelper.getWritableDatabase();
         int match = uriMatcher.match(uri);
         int deletedRow=0;
-        String  movie_id = uri.getPathSegments().get(1);
+
 
         switch(match){
+            case MOVIES :
+                deletedRow=database.delete(MovieContract.MovieEntry.TABLE_NAME,null,null);
+
+                break;
+
 
             case MOVIES_WITH_ID:
-          deletedRow=database.delete(MovieContract.MovieEntry.TABLE_NAME,
+                String  movie_id = uri.getPathSegments().get(1);
+               deletedRow=database.delete(MovieContract.MovieEntry.TABLE_NAME,
                   "movie_id=?",new String[]{movie_id});
                 break;
             default:
@@ -164,6 +205,18 @@ public class MovieContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+         SQLiteDatabase sqLiteDatabase =movieDbHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        int update=0;
+        switch (match){
+            
+            case MOVIES_WITH_ID:
+                String  movie_id = uri.getPathSegments().get(1);
+                update= sqLiteDatabase.update(MovieContract.MovieEntry.TABLE_NAME, values, "movie_id=?", new String[]{movie_id});
+
+                break;
+        }
+        
+        return update ;
     }
 }

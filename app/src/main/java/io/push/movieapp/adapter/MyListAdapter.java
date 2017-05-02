@@ -29,12 +29,7 @@ import io.push.movieapp.entity.Movie;
 public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
     private static String DEBUD_LOG= "MY_ADAPTER_CLASS";
     private List<Movie> movies = new ArrayList<>();
-    public static String EXTRA_TITLE ="io.push.movieapp.EXTRA_MOVIE_TITLE";
-    public static String EXTRA_IMAGE_URL ="io.push.movieapp.EXTRA_MOVIE_URL";
-    public static String EXTRA_DESCRIPTION="io.push.movieapp.EXTRA_DESCRIPTION";
-    public static String EXTRA_RELEASED_DATE="io.push.movieapp.EXTRA_RELEASED_DATE";
-    public static String EXTRA_VOTE_AVERAGE="io.push.movieapp.EXTRA_VOTE_AVERAGE";
-    public static String EXTRA_MOVIE_ID="io.push.movieapp.EXTRA_MOVIE_ID";
+
 
 
     @Override
@@ -106,16 +101,7 @@ public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder
 
         @Override
         public void onClick(View v) {
-            Intent intentVideoDetail = new Intent(context,Movie_detail_Activity.class);
-            Log.d(DEBUD_LOG,movie.getTitle());
-            intentVideoDetail.putExtra(EXTRA_TITLE,movie.getTitle());
-            intentVideoDetail.putExtra(EXTRA_IMAGE_URL,"http://image.tmdb.org/t/p/w342"+movie.getBackdrop_path());
-            intentVideoDetail.putExtra(EXTRA_DESCRIPTION,movie.getOverview());
-            String stringDate = new SimpleDateFormat("yyyy-MM-dd").format(movie.getRelease_date());
-            intentVideoDetail.putExtra(EXTRA_RELEASED_DATE,stringDate);
-            intentVideoDetail.putExtra(EXTRA_VOTE_AVERAGE,movie.getVote_average());
-            intentVideoDetail.putExtra(EXTRA_MOVIE_ID,movie.getId());
-            context.startActivity(intentVideoDetail);
+
           }
     }
 

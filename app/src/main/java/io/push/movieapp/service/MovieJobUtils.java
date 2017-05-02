@@ -38,7 +38,8 @@ public class MovieJobUtils {
             MovieContract.MovieEntry.COLUMN_TITLE,
             MovieContract.MovieEntry.COLUMN_OVERVIEW,
             MovieContract.MovieEntry.COLUMN_IMAGE_URL,
-            MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE
+            MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.MovieEntry.COLUMN_RELEASE_DATE
     };
     public static final int INDEX_ID= 0;
     public static final int INDEX_MOVIE_ID= 1;
@@ -46,6 +47,8 @@ public class MovieJobUtils {
     public static final int INDEX_MOVIE_OVERVIEW=3;
     public static final int INDEX_MOVIE_IMAGE_URL=4;
     public static final int INDEX_MOVIE_VOTE_AVERAGE=5;
+    public static final int INDEX_MOVIE_RELEASE_DATE=6;
+
 
 
     private static final String MOVIE_JOB_TAG="movie_job_tag";
@@ -99,7 +102,7 @@ public class MovieJobUtils {
            values.put(MovieContract.MovieEntry.COLUMN_TITLE,moviesPopural.get(i).getTitle());
            values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,moviesPopural.get(i).getOverview());
            values.put(MovieContract.MovieEntry.COLUMN_IMAGE_URL,moviesPopural.get(i).getBackdrop_path());
-           values.put(MovieContract.MovieEntry.COLUMN_FAVORITE,false);
+           values.put(MovieContract.MovieEntry.COLUMN_FAVORITE,"FALSE");
            values.put(MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE,"TRUE");
            values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,moviesPopural.get(i).getVote_average());
            values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,moviesPopural.get(i).getRelease_date().toString());
@@ -111,7 +114,7 @@ public class MovieJobUtils {
             values.put(MovieContract.MovieEntry.COLUMN_TITLE,moviesTopRate.get(i-sizeTopRate).getTitle());
             values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,moviesTopRate.get(i-sizeTopRate).getOverview());
             values.put(MovieContract.MovieEntry.COLUMN_IMAGE_URL,moviesTopRate.get(i-sizeTopRate).getBackdrop_path());
-            values.put(MovieContract.MovieEntry.COLUMN_FAVORITE,false);
+            values.put(MovieContract.MovieEntry.COLUMN_FAVORITE,"FALSE");
             values.put(MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE,"FALSE");
             values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,moviesTopRate.get(i-sizeTopRate).getVote_average());
             values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,moviesTopRate.get(i-sizeTopRate).getRelease_date().toString());

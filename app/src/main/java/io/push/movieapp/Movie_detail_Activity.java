@@ -47,6 +47,13 @@ import io.push.movieapp.fragment.VideoFragment;
 import io.realm.FavoriteMovieRealmProxy;
 import retrofit2.Call;
 
+import static io.push.movieapp.adapter.MovieAdapter.EXTRA_DESCRIPTION;
+import static io.push.movieapp.adapter.MovieAdapter.EXTRA_IMAGE_URL;
+import static io.push.movieapp.adapter.MovieAdapter.EXTRA_MOVIE_ID;
+import static io.push.movieapp.adapter.MovieAdapter.EXTRA_RELEASED_DATE;
+import static io.push.movieapp.adapter.MovieAdapter.EXTRA_TITLE;
+import static io.push.movieapp.adapter.MovieAdapter.EXTRA_VOTE_AVERAGE;
+
 public class Movie_detail_Activity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie_detail_Activity.QueryResult>{
 
 
@@ -93,7 +100,6 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
         fab_favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isFavorite = !isFavorite;
 
                    favoriteMovie();
             }
@@ -101,14 +107,14 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
         //collapsingToolbar.setTitle();
         collapsingToolbar.setTitleEnabled(false);
         tabLayout.setupWithViewPager(viewPager);
-        movieId= getIntent().getIntExtra(MyListAdapter.EXTRA_MOVIE_ID,0);
-        imageURL=getIntent().getStringExtra(MyListAdapter.EXTRA_IMAGE_URL);
+        movieId= getIntent().getIntExtra(EXTRA_MOVIE_ID,0);
+        imageURL=getIntent().getStringExtra(EXTRA_IMAGE_URL);
         Picasso.with(this).load(imageURL).into(imageView);
-        date =getIntent().getStringExtra(MyListAdapter.EXTRA_RELEASED_DATE);
-        description =getIntent().getStringExtra(MyListAdapter.EXTRA_DESCRIPTION);
-        averageVote =getIntent().getDoubleExtra(MyListAdapter.EXTRA_VOTE_AVERAGE,0);
-        title =getIntent().getStringExtra(MyListAdapter.EXTRA_TITLE);
-        movieId=getIntent().getIntExtra(MyListAdapter.EXTRA_MOVIE_ID,0);
+        date =getIntent().getStringExtra(EXTRA_RELEASED_DATE);
+        description =getIntent().getStringExtra(EXTRA_DESCRIPTION);
+        averageVote =Double.parseDouble(getIntent().getStringExtra(EXTRA_VOTE_AVERAGE));
+        title =getIntent().getStringExtra(EXTRA_TITLE);
+        movieId=getIntent().getIntExtra(EXTRA_MOVIE_ID,0);
         supportActionBar.setTitle(title);
         Loader<QueryResult> queryResultLoader = getSupportLoaderManager().initLoader(ASYNCLAODER_TASK, null, this);
         setupViewPager(viewPager);
@@ -141,16 +147,15 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
     }
 
     public void favoriteMovie(){
-        if(isFavorite){
+        ContentValues contentValues = new ContentValues();
+        if(!isFavorite){
             //TODO Save the favorite in th database
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,movieId);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE,title);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_IMAGE_URL,imageURL);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_FAVORITE,"TRUE");
             new FavoriteAsync().execute(contentValues);
         }
         else {
-           new FavoriteAsync().execute();
+            contentValues.put(MovieContract.MovieEntry.COLUMN_FAVORITE,"FALSE");
+            new FavoriteAsync().execute(contentValues);
 
         }
 
@@ -253,33 +258,29 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
 
 
      public  class FavoriteAsync extends AsyncTask<ContentValues ,Void,Integer>{
-         Uri insert = null ;
+        /// Uri insert = null ;
          Integer result =  new Integer(-2);
          @Override
          protected Integer doInBackground(ContentValues ... params) {
 
-             if (params.length!=0){
-                 insert = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,params[0]);
-             }
-             else{
-                 result = getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(movieId.toString()).build(), null, null);
-             }
-
-
+                 result = getContentResolver().update(
+                         MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(movieId.toString()).build(),
+                         params[0], null,null);
 
              return result;
          }
 
          @Override
          protected void onPostExecute(Integer integer) {
-             if(insert!= null ){
+             isFavorite = !isFavorite;
+             if(isFavorite ){
                  fab_favorite.setImageResource(R.drawable.ic_favorite_white_24dp);
                  Toast.makeText(getApplicationContext(),"Added to favorites",Toast.LENGTH_LONG).show();
-             }
-             if(integer>0&&integer!= -2) {
+             }else{
                  fab_favorite.setImageResource(R.drawable.ic_favorite_border_white_24dp);
                  Toast.makeText(getApplicationContext(),"Removed from favorites",Toast.LENGTH_LONG).show();
              }
+
          }
      }
 

@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         LoaderCallbacks<Cursor>{
 
 
+
     private final String LOG_CAT = MainActivity.class.getSimpleName();
     private static  String KEY_PARAM ="api_key";
     public  static  String API_KEY=BuildConfig.THE_MOVIE_DB_API_TOKEN;
@@ -63,17 +64,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @BindView(R.id.img_no_network) ImageView mImageError ;
     private static final  int MOVIE_LOADER_ID=500;
     private static final int FAVORITE_LOALDER_ID=501;
-    private StaggeredGridLayoutManager gaggeredGridLayoutManager;
+    private static boolean CURRENT_MOVIE_LOAD=false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState!=null ){
-
-
-        }
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -94,11 +91,20 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         mAdapter = new MovieAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
+        if(savedInstanceState!=null ){
+            boolean current_movie_load = savedInstanceState.getBoolean("CURRENT_MOVIE_LOAD");
+            if(current_movie_load){
+                getSupportLoaderManager().initLoader(FAVORITE_LOALDER_ID,null,this);
+            }else{
+                getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
+            }
 
+        }else {
 
-        getSupportLoaderManager().initLoader(MOVIE_LOADER_ID,null,this);
-        MovieJobUtils.initialize(this);
+            getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
+            MovieJobUtils.initialize(this);
 
+        }
         //getSupportLoaderManager().initLoader(FAVORITE_LOALDER_ID,null,new FavoriteLoader());
 
 
@@ -119,9 +125,19 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("movies",(ArrayList<? extends Parcelable>) movies);
-
+        outState.putBoolean("CURRENT_MOVIE_LOAD",CURRENT_MOVIE_LOAD);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Log.d(LOG_CAT," config change");
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return mAdapter.getCursor();
     }
 
     @Override
@@ -145,21 +161,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             return true;
         }
         else if (id == R.id.action_favorite){
-         List<Movie>movieList = new ArrayList<Movie>();
-         Movie  movie;
+            getSupportLoaderManager().initLoader(FAVORITE_LOALDER_ID,null,this);
 
-            CursorLoader cursorLoader = new CursorLoader(getApplicationContext(),MovieContract.MovieEntry.CONTENT_URI,
-                      MAIN_MOVIES_PROJECTION,null,null,null);
-
-            Cursor cursor= cursorLoader.loadInBackground();
-
-            if(cursor.getCount()!=0 && cursor.moveToFirst()){
-                 MovieAdapter movieAdapter = new MovieAdapter();
-                 mRecyclerView.removeAllViews();
-                 movieAdapter.swapCursor(cursor);
-                 mRecyclerView.setAdapter(movieAdapter);
-                 Log.d(LOG_CAT," this it the number of cursor"+cursor.getCount());
-             }
 
             return true;
         }
@@ -177,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
         if (key.equals(getString(R.string.pref_sort_type_key))) {
+
             getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
 
             //getSupportLoaderManager().getLoader(LOADER_ID).forceLoad();
@@ -190,16 +194,19 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         switch (id) {
             case MOVIE_LOADER_ID:
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                String preferenceMovie = sharedPreferences.getString(SettingsActivity.PREF_SORT_TYPE_KEY, POPULAR_MOVIE);
+                String preferenceMovie = sharedPreferences.getString(getString(R.string.pref_sort_type_key),null);
+                String popular = isPopular(preferenceMovie);
                 return new CursorLoader(this,
-                        MovieContract.MovieEntry.CONTENT_URI,
+                        MovieContract.MovieEntry.CONTENT_POPULAR_URI.buildUpon().appendPath(popular).build(),
                         MAIN_MOVIES_PROJECTION,
-                        //MovieContract.MovieEntry.COLUMN_POPULAR_OR_TOP_RATE+"=="+isPopular(preferenceMovie),
                         null,
                         null,
                         null
                 );
-
+            case FAVORITE_LOALDER_ID:
+                 return new CursorLoader(getApplicationContext(),
+                        MovieContract.MovieEntry.CONTENT_FAVORITE_URI.buildUpon().appendPath("TRUE").build(),
+                        MAIN_MOVIES_PROJECTION,null,null,null);
             default:
                 return null;
         }
@@ -210,23 +217,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     protected void onDestroy() {
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader,Cursor data) {
-        if(data!= null ) {
+        int loaderId = loader.getId();
+
+        if (data != null) {
             DebugDB.getAddressLog();
             mAdapter.swapCursor(data);
-
-            Log.d(LOG_CAT,"cursore count"+ data.getCount());
-
-        }else if (data.getCount()==0) {
+            if (loaderId == MOVIE_LOADER_ID) {
+                CURRENT_MOVIE_LOAD = false;
+            } else {
+                CURRENT_MOVIE_LOAD = true;
+            }
 
         }
-
-        }
-
+    }
 
 
     @Override
@@ -238,10 +245,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
   public static String isPopular(String sType){
-      if(sType==POPULAR_MOVIE)
-          return  "1";
-
-          return "0";
+      if(sType.equalsIgnoreCase(POPULAR_MOVIE)) {
+          return "TRUE";
+      }else {
+          return "FALSE";
+      }
   }
 
 }

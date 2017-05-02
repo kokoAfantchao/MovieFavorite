@@ -20,16 +20,13 @@ public class MovieJobService extends JobService {
             @Override
             protected Void doInBackground(Void... voids) {
                 MovieJobTask.Movie(getApplicationContext());
-
                 return null;
             }
-
             @Override
             protected void onPostExecute(Void aVoid) {
                 jobFinished(job,false);
             }
         };
-
         asyncTask.execute();
         return true;
     }
