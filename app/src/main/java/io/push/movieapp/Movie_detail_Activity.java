@@ -1,6 +1,9 @@
 package io.push.movieapp;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -54,7 +57,7 @@ import static io.push.movieapp.adapter.MovieAdapter.EXTRA_RELEASED_DATE;
 import static io.push.movieapp.adapter.MovieAdapter.EXTRA_TITLE;
 import static io.push.movieapp.adapter.MovieAdapter.EXTRA_VOTE_AVERAGE;
 
-public class Movie_detail_Activity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie_detail_Activity.QueryResult>{
+public class Movie_detail_Activity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie_detail_Activity.QueryResult> {
 
 
     @BindView(R.id.image_movie_detail) ImageView imageView;
@@ -75,6 +78,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
     private ReviewFragment reviewFragment;
     private VideoFragment  videoFragment;
     private Boolean isFavorite = false;
+
     List<Review> reviwResults = new ArrayList<Review>();
     List<Video> videoResults = new ArrayList<Video>();
 
@@ -104,6 +108,8 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
                    favoriteMovie();
             }
         });
+
+
         //collapsingToolbar.setTitle();
         collapsingToolbar.setTitleEnabled(false);
         tabLayout.setupWithViewPager(viewPager);
@@ -149,7 +155,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
     public void favoriteMovie(){
         ContentValues contentValues = new ContentValues();
         if(!isFavorite){
-            //TODO Save the favorite in th database
+            //TODO Save the favorite in the database
             contentValues.put(MovieContract.MovieEntry.COLUMN_FAVORITE,"TRUE");
             new FavoriteAsync().execute(contentValues);
         }

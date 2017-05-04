@@ -40,8 +40,8 @@
         </service>
         <service android:name=".service.MovieBackGroundService"
             android:exported="false">
-
         </service>
+
 
         <activity
             android:name=".SettingsActivity"

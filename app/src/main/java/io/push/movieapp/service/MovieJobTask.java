@@ -3,6 +3,7 @@ package io.push.movieapp.service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContentResolverCompat;
 import android.util.Log;
 
@@ -44,8 +45,11 @@ public class MovieJobTask {
                 Log.d(TAG_LOG,"NUmber of insertion "+insert);
                 Log.d(TAG_LOG,"Number of toprate "+movieResult1.getResults().size());
                 Log.d(TAG_LOG,"Number of Popular "+movieResult.getResults().size());
+                Intent mIntent = new Intent(MainActivity.ACTION_DATA_BASE_LOAD);
+                context.sendBroadcast(mIntent);
 
             }
+
 
 
 

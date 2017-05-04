@@ -1,7 +1,9 @@
 package io.push.movieapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -14,6 +16,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
     private final String LOG_CAT = MainActivity.class.getSimpleName();
+    public static final String ACTION_DATA_BASE_LOAD="io.push.movieapp.ACTION_DATA_BASE_LOAD";
     private static  String KEY_PARAM ="api_key";
     public  static  String API_KEY=BuildConfig.THE_MOVIE_DB_API_TOKEN;
     public  static  String POPULAR_MOVIE="popular";
@@ -65,6 +69,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private static final  int MOVIE_LOADER_ID=500;
     private static final int FAVORITE_LOALDER_ID=501;
     private static boolean CURRENT_MOVIE_LOAD=false;
+    private BroadcastReceiver mBroadcastReceiver = mBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_CAT," am receiving like receiver ");
+            initLaoder();
+
+        }
+
+    };;
 
 
     @Override
@@ -100,12 +114,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
 
         }else {
+            MovieJobUtils.initialize(this);
 
             getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
-            MovieJobUtils.initialize(this);
+
 
         }
         //getSupportLoaderManager().initLoader(FAVORITE_LOALDER_ID,null,new FavoriteLoader());
+
 
 
          boolean online = isOnline();
@@ -121,6 +137,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
       PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
 
+
+    }
+    public void  initLaoder() {
+        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
     }
 
     @Override
@@ -145,6 +165,21 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver,
+                new IntentFilter(ACTION_DATA_BASE_LOAD));
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -194,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         switch (id) {
             case MOVIE_LOADER_ID:
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                String preferenceMovie = sharedPreferences.getString(getString(R.string.pref_sort_type_key),null);
+                String preferenceMovie = sharedPreferences.getString(getString(R.string.pref_sort_type_key),POPULAR_MOVIE);
                 String popular = isPopular(preferenceMovie);
                 return new CursorLoader(this,
                         MovieContract.MovieEntry.CONTENT_POPULAR_URI.buildUpon().appendPath(popular).build(),
