@@ -99,7 +99,9 @@ public class MovieContentProvider extends ContentProvider {
 
                 throw new UnsupportedOperationException("Unsupport Uri"+ uri);
         }
-     getContext().getContentResolver().notifyChange(uri,null);
+        // I have to call cursor.setNoticationUri
+      // getContext().getContentResolver().notifyChange(uri,null);
+        cursorReturn.setNotificationUri(getContext().getContentResolver(), uri);
 
         return  cursorReturn;
     }
@@ -127,6 +129,7 @@ public class MovieContentProvider extends ContentProvider {
 
                         if (rowInset> 0) {
                             getContext().getContentResolver().notifyChange(uri, null);
+
                         }
                         return  rowInset;
 

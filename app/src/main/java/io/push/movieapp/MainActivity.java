@@ -69,16 +69,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private static final  int MOVIE_LOADER_ID=500;
     private static final int FAVORITE_LOALDER_ID=501;
     private static boolean CURRENT_MOVIE_LOAD=false;
-    private BroadcastReceiver mBroadcastReceiver = mBroadcastReceiver = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_CAT," am receiving like receiver ");
-            initLaoder();
-
-        }
-
-    };;
 
 
     @Override
@@ -139,9 +130,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
     }
-    public void  initLaoder() {
-        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
-    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -169,16 +158,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onResume() {
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver,
-                new IntentFilter(ACTION_DATA_BASE_LOAD));
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         super.onPause();
     }
 
