@@ -53,8 +53,6 @@ import static io.push.movieapp.service.MovieJobUtils.MAIN_MOVIES_PROJECTION;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
         LoaderCallbacks<Cursor>{
 
-
-
     private final String LOG_CAT = MainActivity.class.getSimpleName();
     public static final String ACTION_DATA_BASE_LOAD="io.push.movieapp.ACTION_DATA_BASE_LOAD";
     private static  String KEY_PARAM ="api_key";
@@ -106,14 +104,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         }else {
             MovieJobUtils.initialize(this);
-
             getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
-
-
         }
         //getSupportLoaderManager().initLoader(FAVORITE_LOALDER_ID,null,new FavoriteLoader());
-
-
 
          boolean online = isOnline();
         if (online){

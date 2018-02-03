@@ -40,19 +40,11 @@ public class MovieJobTask {
                     ContentResolver contentResolver = context.getContentResolver();
 
                 contentResolver.delete(MovieContract.MovieEntry.CONTENT_URI,null,null);
-
                 int insert = contentResolver.bulkInsert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
                 Log.d(TAG_LOG,"NUmber of insertion "+insert);
                 Log.d(TAG_LOG,"Number of toprate "+movieResult1.getResults().size());
                 Log.d(TAG_LOG,"Number of Popular "+movieResult.getResults().size());
-                Intent mIntent = new Intent(MainActivity.ACTION_DATA_BASE_LOAD);
-                context.sendBroadcast(mIntent);
-
             }
-
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }

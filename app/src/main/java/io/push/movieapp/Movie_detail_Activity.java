@@ -47,7 +47,7 @@ import io.push.movieapp.service.ServiceGeneratore;
 import io.push.movieapp.fragment.OverViewFragment;
 import io.push.movieapp.fragment.ReviewFragment;
 import io.push.movieapp.fragment.VideoFragment;
-import io.realm.FavoriteMovieRealmProxy;
+//import io.realm.FavoriteMovieRealmProxy;
 import retrofit2.Call;
 
 import static io.push.movieapp.adapter.MovieAdapter.EXTRA_DESCRIPTION;
@@ -104,8 +104,7 @@ public class Movie_detail_Activity extends AppCompatActivity implements LoaderMa
         fab_favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                   favoriteMovie();
+                favoriteMovie();
             }
         });
 

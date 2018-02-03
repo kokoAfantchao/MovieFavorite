@@ -22,7 +22,6 @@ public class OverViewFragment extends Fragment {
     private static final String ARG_PARAM_DESCRIPTION = "DESCRIPTION";
     private static final String ARG_PARAM_DATE = "DATE";
     private static final String ARG_PARAM_VOTE="VOTE";
-
     // TODO: Rename and change types of parameters
     private String  description;
     private String  date;
@@ -76,8 +75,6 @@ public class OverViewFragment extends Fragment {
         textViewReleasedDate.setText(date);
        // textView_title.setText(title);
         mratingBar.setRating(vote_average.floatValue());
-
-
         return  rootView;
     }
 

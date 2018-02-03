@@ -14,8 +14,6 @@ import retrofit2.http.Query;
 
 public interface MovieService {
 
-
-
     @GET("movie/{movie_type}")
     Call<MovieResult> listmovie(@Path("movie_type") String movie_type, @Query("api_key") String api_key);
 
@@ -24,7 +22,4 @@ public interface MovieService {
 
     @GET("movie/{id}/reviews")
     Call<ReviewResult> movieReviews(@Path("id") int  movie_id, @Query("api_key") String api_key);
-
-
-
 }
